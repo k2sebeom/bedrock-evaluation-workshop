@@ -7,18 +7,12 @@ from pathlib import Path
 
 #import sagemaker_containers
 import torch
-import torch.distributed as dist
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-import torch.utils.data
-import torch.utils.data.distributed
-
 import pandas as pd
-from datasets import Dataset, load_dataset
-from transformers import AutoTokenizer, AutoModelForCausalLM, TrainingArguments
+
+from datasets import Dataset
+from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import get_peft_model, LoraConfig, TaskType, AutoPeftModelForCausalLM
-from trl import SFTTrainer
+from trl import SFTTrainer, SFTConfig
 
 
 logger = logging.getLogger(__name__)
@@ -101,19 +95,22 @@ def train(args):
     peft_model = peft_model_fn(model)
 
     peft_model.train()
+    tokenizer.padding_side = 'right'
+
     trainer=SFTTrainer(
         model=peft_model,
         train_dataset=training_data,
-        processing_class=tokenizer,
-        args=TrainingArguments(
+        tokenizer=tokenizer,
+        args=SFTConfig(
             learning_rate=args.lr,
             output_dir="output",
             num_train_epochs=args.epochs,
+            max_seq_length=1024,
+            dataset_text_field='text',
         ),
     )
-    
     trainer.train()
-    
+
     save_model(peft_model, tokenizer, Path(args.model_dir))
 
 

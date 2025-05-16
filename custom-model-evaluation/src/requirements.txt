@@ -1,7 +1,8 @@
-datasets
-peft
-trl
-bitsandbytes
-tokenizers
+datasets==3.6.0
+peft==0.15.2
+trl==0.11.4
+bitsandbytes==0.45.5
+tokenizers==0.20.3
 transformers==4.45.2
-hf_xet
+hf_xet==1.1.1
+accelerate==1.7.0
