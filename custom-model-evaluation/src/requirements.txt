@@ -1,0 +1,7 @@
+datasets
+peft
+trl
+bitsandbytes
+tokenizers
+transformers==4.45.2
+hf_xet
